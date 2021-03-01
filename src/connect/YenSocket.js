@@ -3,6 +3,7 @@ const { EventEmitter } = require('events');
 const { CreateHeaders } = require('../util/CreateHeaders');
 const { generateExpectedKey } = require('../util/GenerateKey');
 const { decodeWebSocketFrame, generateMessage } = require('../util/FrameBuffer');
+const { BASE_BUFFER } = require('../constants/Constants');
 const generatedHeaders = new CreateHeaders();
 
 class YenSocket extends EventEmitter {
@@ -17,7 +18,7 @@ class YenSocket extends EventEmitter {
         this.expectedKey = generateExpectedKey("sha1", generatedHeaders.generatedWSKey, "base64");
 
         // Initialize buffer
-        let buffer = Buffer.alloc(0);
+        let buffer = BASE_BUFFER;
         let framebuffer = null;
 
         this.request.on('upgrade', (response, socket, head) => {
