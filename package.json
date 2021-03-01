@@ -1,0 +1,11 @@
+{
+  "name": "yen-socket",
+  "version": "1.0.0",
+  "description": "An outlined and very imperfect implementation of WebSocket with the built-in modules.",
+  "author": "KaNguy",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/KaNguy/Yen-Socket/issues"
+  },
+  "homepage": "https://github.com/KaNguy/Yen-Socket/#readme"
+}
