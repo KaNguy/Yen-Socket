@@ -4,6 +4,11 @@
   "description": "An outlined and very imperfect implementation of WebSocket with the built-in modules.",
   "author": "KaNguy",
   "license": "Apache-2.0",
+  "main": "src/index.js",
+  "bin": "src/index.js",
+  "scripts": {
+    "test": "node src/index.js"
+  },
   "bugs": {
     "url": "https://github.com/KaNguy/Yen-Socket/issues"
   },
