@@ -1,4 +1,4 @@
-const { YenSocket } = require('../src/connect/YenSocket');
+const { YenSocket } = require('../src/index');
 
 const { token } = require('../config.json');
 const payload = JSON.stringify({
