@@ -14,7 +14,7 @@ class YenSocket extends EventEmitter {
         this.request.end();
 
         this.request.on('upgrade', (response, socket) => {
-            this.emit('open');
+            this.emit('open', ({ response, socket }));
 
             let buffer = BASE_BUFFER;
             let framebuffer = null;
@@ -34,6 +34,12 @@ class YenSocket extends EventEmitter {
             if (theMessage && theMessage.op === 10) {
                 this.socket.write(generateMessage(data));
             }
+        });
+    }
+
+    destroy() {
+        this.on('open', ({ response, socket }) => {
+            return response.destroyed ? null : socket.destroy();
         });
     }
 }
