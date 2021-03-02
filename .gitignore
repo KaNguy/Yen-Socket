@@ -4,6 +4,8 @@
 .DS_Store
 
 # Project files & folders
+src-test
+src-2
 src-prototype
 config.json
 
