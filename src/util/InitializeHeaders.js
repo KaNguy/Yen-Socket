@@ -1,6 +1,5 @@
 const { URL } = require('url');
 const { generateSecWebSocketKey } = require('../util/GenerateKey');
-const generatedWSKey = generateSecWebSocketKey(16, "base64");
 
 class InitializeHeaders {
     constructor(options = {}) {
@@ -8,6 +7,8 @@ class InitializeHeaders {
         if (options.URL) {
             this.options.URL = options.URL;
         }
+
+        this.generatedWSKey = generateSecWebSocketKey(16, "base64");
     }
 
     parseHeaders(url = this) {
@@ -16,7 +17,7 @@ class InitializeHeaders {
             Host: `${theURL.host}:${theURL.port || 443}`,
             Connection: "Upgrade",
             Upgrade: "websocket",
-            "Sec-WebSocket-Key": generatedWSKey,
+            "Sec-WebSocket-Key": this.generatedWSKey,
             "Sec-WebSocket-Version": "13",
         };
 
@@ -30,12 +31,11 @@ class InitializeHeaders {
         };
     }
 
-    get generatedWSKey() {
-        return generatedWSKey;
+    getGeneratedWSKey() {
+        return this.generatedWSKey;
     }
 }
 
 module.exports = {
-    InitializeHeaders: InitializeHeaders,
-    generatedWSKey
+    InitializeHeaders: InitializeHeaders
 };
