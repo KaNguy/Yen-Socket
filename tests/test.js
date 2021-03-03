@@ -26,3 +26,5 @@ YS.on('message', m => {
     //     console.log(mes.t);
     // }
 });
+
+YS.close();
