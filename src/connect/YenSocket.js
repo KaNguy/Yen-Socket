@@ -54,18 +54,36 @@ class YenSocket extends EventEmitter {
 
     // Closes the connection in a much cleaner & graceful manner
     // TODO: Finish implementing this, no websocket can recognize this.
-    close() {
-        this.on('open', ({ response, socket}) => {
-            // socket.write(
-            //     generateMessage(
-            //         JSON.stringify({
-            //                 fin: true,
-            //                 opcode: 0x08
-            //             }
-            //         )
-            //     )
-            // );
+    close(code = this.code || 1000, data) {
+        let theURL = new (require('url')).URL(this.url);
+        const headers = {
+            Host: `${theURL.host}:${theURL.port || 443}`,
+            Connection: "close"
+        }
+        console.log("This request");
+        https.request({
+            agent: false,
+            hostname: theURL.hostname,
+            port: theURL.port || 443,
+            path: `${theURL.pathname}${theURL.search}`,
+            headers
         });
+        // const length = Buffer.byteLength(data);
+        // const mask = Buffer.alloc(4);
+        // let buf = Buffer.allocUnsafe(2 + length);
+        // buf.writeUInt16BE(code, 0);
+        // buf.write(data, 2);
+        //
+        // this.on('open', ({ response, socket}) => {
+        //     let close_data = {
+        //         fin: true,
+        //         rsv1: false,
+        //         op: 0x8,
+        //         mask: mask,
+        //         readOnly: false
+        //     }
+        //     socket.write(generateMessage(JSON.stringify(close_data)));
+        // });
     }
 }
 
