@@ -19,6 +19,7 @@ const YS = new YenSocket('wss://gateway.discord.gg:443?v=8&encoding=json');
 YS.on('open', () => {
     YS.send(payload);
 });
+
 YS.on('message', m => {
     const mes = JSON.parse(m);
     console.log(mes);
@@ -27,4 +28,4 @@ YS.on('message', m => {
     // }
 });
 
-//YS.close(1000, JSON.stringify({ op: 0x8 }));
+YS.close(1000, JSON.stringify({ op: 0x08 }));
