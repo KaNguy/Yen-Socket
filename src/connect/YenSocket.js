@@ -23,6 +23,7 @@ class YenSocket extends EventEmitter {
             if (response.headers["sec-websocket-accept"] !== expectedKey) throw new Error("The sec-websocket-accept header returned a mismatched key.");
 
             this.emit('open', ({ response, socket }));
+            this.destroyed = socket.destroyed;
 
             let buffer = BASE_BUFFER;
             let framebuffer = null;
@@ -48,42 +49,18 @@ class YenSocket extends EventEmitter {
     // Destroys the connection, but may be lossy
     destroy() {
         this.on('open', ({ response, socket }) => {
+            this.emit('close');
             return response.destroyed ? null : socket.destroy();
         });
     }
 
     // Closes the connection in a much cleaner & graceful manner
     // TODO: Finish implementing this, no websocket can recognize this.
+    // TODO: Help wanted for making a close frame
     close(code = this.code || 1000, data) {
-        let theURL = new (require('url')).URL(this.url);
-        const headers = {
-            Host: `${theURL.host}:${theURL.port || 443}`,
-            Connection: "close"
-        }
-        console.log("This request");
-        https.request({
-            agent: false,
-            hostname: theURL.hostname,
-            port: theURL.port || 443,
-            path: `${theURL.pathname}${theURL.search}`,
-            headers
+        this.on('open', ({ response, socket }) => {
+            //socket.write(generateMessage(JSON.stringify({ fin: true, op: 0x08 })));
         });
-        // const length = Buffer.byteLength(data);
-        // const mask = Buffer.alloc(4);
-        // let buf = Buffer.allocUnsafe(2 + length);
-        // buf.writeUInt16BE(code, 0);
-        // buf.write(data, 2);
-        //
-        // this.on('open', ({ response, socket}) => {
-        //     let close_data = {
-        //         fin: true,
-        //         rsv1: false,
-        //         op: 0x8,
-        //         mask: mask,
-        //         readOnly: false
-        //     }
-        //     socket.write(generateMessage(JSON.stringify(close_data)));
-        // });
     }
 }
 
