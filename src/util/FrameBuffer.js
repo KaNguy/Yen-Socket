@@ -19,18 +19,6 @@ function generateMeta(fin, op, masked, payload) {
         start += 8;
     }
 
-    if (op === 0x08) {
-        if (length === 1) {
-            // TODO: Fix this
-            meta[0] = Buffer.allocUnsafe(0);
-        }
-
-        if (length >= 2) {
-            // TODO: Fix this
-            //meta[0] = payload.slice(2);
-        }
-    }
-
     if (masked) {
         const mask = Buffer.alloc(4);
         let i = 0;
@@ -43,6 +31,20 @@ function generateMeta(fin, op, masked, payload) {
         start += 4;
     }
     return meta;
+}
+
+function closeFrame(code, reason, masked) {
+    let payload, meta;
+
+    if (code !== undefined && code !== 1005) {
+        payload = Buffer.from(reason === undefined ? '--' : '--' + reason)
+        payload.writeUInt16BE(code, 0)
+    } else {
+        payload = Buffer.alloc(0)
+    }
+    meta = generateMeta(true, 8, masked === undefined ? false : masked, payload)
+
+    return Buffer.concat([meta, payload], meta.length + payload.length)
 }
 
 function generateMessage(data) {
@@ -110,5 +112,5 @@ function decode(socket, buffer, frameBuffer) {
 module.exports = {
     generateMessage,
     decode,
-    generateMeta
+    closeFrame
 }
