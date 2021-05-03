@@ -21,11 +21,11 @@ function generateMeta(fin, op, masked, payload) {
 
     if (masked) {
         const mask = Buffer.alloc(4);
-        let i = 0;
-        for (i = 0; i < 4; i++) {
+        //let i = 0;
+        for (let i = 0; i < 4; i++) {
             meta[start + i] = mask[i] = Math.floor(Math.random() * 256);
         }
-        for (i = 0; i < payload.length; i++) {
+        for (let i = 0; i < payload.length; i++) {
             payload[i] ^= mask[i % 4];
         }
         start += 4;
