@@ -59,6 +59,11 @@ class YenSocket extends EventEmitter {
     // TODO: Help wanted for making a close frame
     close(code = this.code || 1000, data) {
         this.on('open', ({ response, socket }) => {
+            const meta = require('../util/FrameBuffer').generateMeta(true, 0x08, true, { fin: true, op: 0x08 });
+            const payload = Buffer.from(JSON.stringify({ fin: true, op: 0x08 }));
+            const closeFrame = Buffer.concat([meta, payload], meta.length + payload.length);
+            // Returns a close code of 1002 which is not good, needs a close code of 1000
+            socket.write(closeFrame);
             //socket.write(generateMessage(JSON.stringify({ fin: true, op: 0x08 })));
         });
     }
