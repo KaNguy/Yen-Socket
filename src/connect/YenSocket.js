@@ -2,7 +2,7 @@ const https = require('https');
 const { InitializeHeaders } = require('../util/InitializeHeaders');
 const { EventEmitter } = require('events');
 const { BASE_BUFFER } = require('../constants/Constants');
-const { decode, generateMessage } = require('../util/FrameBuffer');
+const { decode, generateMessage, closeFrame } = require('../util/FrameBuffer');
 const { generateExpectedKey } = require('../util/GenerateKey');
 
 class YenSocket extends EventEmitter {
@@ -55,17 +55,9 @@ class YenSocket extends EventEmitter {
     }
 
     // Closes the connection in a much cleaner & graceful manner
-    // TODO: Finish implementing this, no websocket can recognize this.
-    // TODO: Help wanted for making a close frame
-    close(code = this.code || 1000, data) {
-        this.on('open', ({ response, socket }) => {
-            //const meta = require('../util/FrameBuffer').generateMeta(true, 0x08, true, { fin: true, op: 0x08 });
-            //const payload = Buffer.from(JSON.stringify({ fin: true, op: 0x08 }));
-            //const closeFrame = Buffer.concat([meta, payload], meta.length + payload.length);
-            // Returns a close code of 1002 which is not good, needs a close code of 1000
-            //socket.write(closeFrame);
-            //socket.write(generateMessage(JSON.stringify({ fin: true, op: 0x08 })));
-            const close = require('../util/FrameBuffer').closeFrame(1000, undefined, true);
+    close(code = this.code || 1000, reason, masked = true) {
+        this.on('open', ({ socket }) => {
+            const close = closeFrame(code, reason || undefined, masked);
             socket.write(close);
         });
     }
