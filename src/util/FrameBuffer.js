@@ -19,6 +19,18 @@ function generateMeta(fin, op, masked, payload) {
         start += 8;
     }
 
+    if (op === 0x08) {
+        if (length === 1) {
+            // TODO: Fix this
+            meta[0] = Buffer.allocUnsafe(0);
+        }
+
+        if (length >= 2) {
+            // TODO: Fix this
+            //meta[0] = payload.slice(2);
+        }
+    }
+
     if (masked) {
         const mask = Buffer.alloc(4);
         let i = 0;
@@ -97,5 +109,6 @@ function decode(socket, buffer, frameBuffer) {
 
 module.exports = {
     generateMessage,
-    decode
+    decode,
+    generateMeta
 }
