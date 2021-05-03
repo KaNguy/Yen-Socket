@@ -102,7 +102,7 @@ function decode(socket, buffer, frameBuffer) {
                 if (payload.length >= 2) {
                     const code = payload.readUInt16BE(0);
                     const reason = payload.slice(2).toString();
-                    console.log(`Close, opcode: ${opcode}`, code, reason);
+                    console.log(`Connection closed, Opcode: ${opcode}`, `Code: ${code}`, `Reason: ${reason || "No reason"}`);
                 }
             }
         }
