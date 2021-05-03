@@ -42,7 +42,7 @@ function closeFrame(code, reason, masked) {
     } else {
         payload = Buffer.alloc(0)
     }
-    meta = generateMeta(true, 8, masked === undefined ? false : masked, payload)
+    meta = generateMeta(true, 0x08, masked === undefined ? false : masked, payload)
 
     return Buffer.concat([meta, payload], meta.length + payload.length)
 }
