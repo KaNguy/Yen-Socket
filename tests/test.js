@@ -28,4 +28,4 @@ YS.on('message', m => {
     // }
 });
 
-YS.close(1000, JSON.stringify({ op: 0x08 }));
+YS.close(1000, undefined, true);
