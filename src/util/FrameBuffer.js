@@ -47,6 +47,15 @@ function closeFrame(code, reason, masked) {
     return Buffer.concat([meta, payload], meta.length + payload.length)
 }
 
+function pingFrame(data, masked) {
+    let payload, meta;
+
+    payload = Buffer.from(data);
+    meta = generateMeta(true, 0x9, masked === undefined ? false : masked, payload);
+
+    return Buffer.concat([meta, payload], meta.length + payload.length);
+}
+
 function generateMessage(data) {
     const payload = Buffer.from(data);
     const meta = generateMeta(true, 1, true, payload);
@@ -102,7 +111,10 @@ function decode(socket, buffer, frameBuffer) {
                 if (payload.length >= 2) {
                     const code = payload.readUInt16BE(0);
                     const reason = payload.slice(2).toString();
-                    console.log(`Connection closed, Opcode: ${opcode}`, `Code: ${code}`, `Reason: ${reason || "No reason"}`);
+                    console.log(`Connection closed, Opcode: ${opcode}`, `Code: ${code},`, `Reason: ${reason || "No reason"}`);
+                } else {
+                    const code = 1005;
+                    console.log(`Connection closed, Opcode: ${opcode}`, `Code: ${code},`, `Reason: No reason`);
                 }
             }
         }
