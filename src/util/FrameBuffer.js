@@ -102,7 +102,6 @@ function decode(socket, buffer, frameBuffer) {
                 payload = payload.toString();
                 frameBuffer = frameBuffer ? frameBuffer + payload : payload;
                 if (fin) {
-                    // console.log(frameBuffer);
                     this.socket.emit("message", JSON.parse(frameBuffer));
                     frameBuffer = null;
                 }
