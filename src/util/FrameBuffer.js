@@ -1,3 +1,5 @@
+const { BASE_BUFFER } = require('../constants/Constants');
+
 /**
  * Creates metadata for the frame
  * The payload may be changed if the frame is masked
@@ -85,7 +87,12 @@ function generateMessage(data) {
     return Buffer.concat([meta, payload], meta.length + payload.length);
 }
 
-const { BASE_BUFFER } = require('../constants/Constants');
+/**
+ * Event-based decoder than decodes incoming messages and emits them as events
+ * @param {Socket} socket - Socket for listening to the event
+ * @param {Buffer} buffer - Buffer that is allocated at 0
+ * @param {any} frameBuffer - Null frame buffer used for emitting data
+ */
 function decode(socket, buffer, frameBuffer) {
     this.socket = socket;
     buffer = BASE_BUFFER;
