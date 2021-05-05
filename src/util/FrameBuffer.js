@@ -1,3 +1,13 @@
+/**
+ * Creates metadata for the frame
+ * The payload may be changed if the frame is masked
+ * @param {boolean} fin - Indicates this is the final fragment in a WebSocket message
+ * @param {number} op - Defines interpretation of the payload data
+ * @param {boolean} masked - Masking for payloads to avoid vulnerability attacks on network infrastructure
+ * @param {Buffer} payload - Payload and heart of the data
+ * @returns {Buffer}
+ * @private
+ */
 function generateMeta(fin, op, masked, payload) {
     const length = payload.length;
     const meta = Buffer.alloc(
@@ -33,6 +43,14 @@ function generateMeta(fin, op, masked, payload) {
     return meta;
 }
 
+/**
+ * Creates a frame that will cleanly close the connection
+ * The reason is optional, masking the data will default to true
+ * @param {number} code - Status code
+ * @param {string} reason - Reason (optional)
+ * @param {boolean} masked - Masking for payloads to avoid vulnerability attacks on network infrastructure
+ * @returns {Buffer}
+ */
 function closeFrame(code, reason, masked) {
     let payload, meta;
 
@@ -56,6 +74,11 @@ function pingFrame(data, masked) {
     return Buffer.concat([meta, payload], meta.length + payload.length);
 }
 
+/**
+ * Generates a WebSocket message
+ * @param {string} data - Data for sending payloads
+ * @returns {Buffer}
+ */
 function generateMessage(data) {
     const payload = Buffer.from(data);
     const meta = generateMeta(true, 1, true, payload);
