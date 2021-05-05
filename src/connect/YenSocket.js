@@ -6,6 +6,11 @@ const { decode, generateMessage, closeFrame } = require('../util/FrameBuffer');
 const { generateExpectedKey } = require('../util/GenerateKey');
 
 class YenSocket extends EventEmitter {
+    /**
+     * Constructor for the YenSocket, requires a WS url to function in the constructor
+     * @param {string} url
+     * @param {object} options
+     */
     constructor(url, options) {
         super(url, options);
         this.url = url;
@@ -39,6 +44,10 @@ class YenSocket extends EventEmitter {
         });
     }
 
+    /**
+     * Sends data, designed for sending JSON payloads.
+     * @param {string} data - Data should be sent in the form of a string so it can be buffered
+     */
     send(data) {
         this.on('message', message => {
             let theMessage = JSON.parse(message);
@@ -48,7 +57,9 @@ class YenSocket extends EventEmitter {
         });
     }
 
-    // Destroys the connection, but may be lossy
+    /**
+     * Destroys the connection.
+     */
     destroy() {
         this.on('open', ({ response, socket }) => {
             this.emit('close');
@@ -56,7 +67,12 @@ class YenSocket extends EventEmitter {
         });
     }
 
-    // Closes the connection in a much cleaner & graceful manner
+    /**
+     * Cleanly closes the connection with a close frame
+     * @param {number} code - Takes a valid WebSocket close code
+     * @param {string} reason - Takes any reason as a string
+     * @param {boolean} masked - Should be masked but this is optional in some cases
+     */
     close(code = this.code || 1000, reason, masked = true) {
         this.on('open', ({ socket }) => {
             const close = closeFrame(code, reason || undefined, masked);
