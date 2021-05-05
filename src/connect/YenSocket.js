@@ -2,7 +2,7 @@ const https = require('https');
 const { InitializeHeaders } = require('../util/InitializeHeaders');
 const { EventEmitter } = require('events');
 const { BASE_BUFFER } = require('../constants/Constants');
-const { decode, generateMessage, closeFrame } = require('../util/FrameBuffer');
+const { decode, generateMessage, closeFrame, pingFrame } = require('../util/FrameBuffer');
 const { generateExpectedKey } = require('../util/GenerateKey');
 
 class YenSocket extends EventEmitter {
@@ -15,6 +15,12 @@ class YenSocket extends EventEmitter {
         super(url, options);
         this.url = url;
         this.options = options || {};
+
+        this.CONNECTING = 0;
+        this.OPEN = 1;
+        this.CLOSING = 2;
+        this.CLOSED = 3;
+        this.CONNECTION_STATE = this.CONNECTING;
 
         const initializeHeaders = new InitializeHeaders();
         this.request = https.request(initializeHeaders.parseHeaders(url));
@@ -29,7 +35,10 @@ class YenSocket extends EventEmitter {
 
             validateHandshake(response.headers, initializeHeaders.getGeneratedWSKey());
 
-            this.emit('open', ({ response, socket }));
+            this.CONNECTION_STATE = this.OPEN;
+
+            let state = this.CONNECTION_STATE;
+            this.emit('open', ({ response, socket, state }));
             this.destroyed = socket.destroyed;
 
             let buffer = BASE_BUFFER;
@@ -77,6 +86,15 @@ class YenSocket extends EventEmitter {
         this.on('open', ({ socket }) => {
             const close = closeFrame(code, reason || undefined, masked);
             socket.write(close);
+        });
+    }
+
+    ping(data, masked = true) {
+        this.on('open', ({ socket, state }) => {
+            if (state === this.OPEN) {
+                const ping = pingFrame(data, masked);
+                socket.write(ping);
+            }
         });
     }
 }
