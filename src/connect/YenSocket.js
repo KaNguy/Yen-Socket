@@ -2,7 +2,7 @@ const https = require('https');
 const { InitializeHeaders } = require('../util/InitializeHeaders');
 const { EventEmitter } = require('events');
 const { BASE_BUFFER } = require('../constants/Constants');
-const { decode, generateMessage, closeFrame, pingFrame } = require('../util/FrameBuffer');
+const FrameBuffer = require('../util/FrameBuffer');
 const { generateExpectedKey } = require('../util/GenerateKey');
 
 class YenSocket extends EventEmitter {
@@ -43,7 +43,7 @@ class YenSocket extends EventEmitter {
 
             let buffer = BASE_BUFFER;
             let framebuffer = null;
-            decode(socket, buffer, framebuffer);
+            FrameBuffer.decode(socket, buffer, framebuffer);
 
             socket.on('message', message => {
                 this.emit("message", JSON.stringify(message));
@@ -61,7 +61,7 @@ class YenSocket extends EventEmitter {
         this.on('message', message => {
             let theMessage = JSON.parse(message);
             if (theMessage && theMessage.op === 10) {
-                this.socket.write(generateMessage(data));
+                this.socket.write(FrameBuffer.generateMessage(data));
             }
         });
     }
@@ -84,7 +84,7 @@ class YenSocket extends EventEmitter {
      */
     close(code = this.code || 1000, reason, masked = true) {
         this.on('open', ({ socket }) => {
-            const close = closeFrame(code, reason || undefined, masked);
+            const close = FrameBuffer.closeFrame(code, reason || undefined, masked);
             socket.write(close);
         });
     }
@@ -92,7 +92,7 @@ class YenSocket extends EventEmitter {
     ping(data, masked = true) {
         this.on('open', ({ socket, state }) => {
             if (state === this.OPEN) {
-                const ping = pingFrame(data, masked);
+                const ping = FrameBuffer.pingFrame(data, masked);
                 socket.write(ping);
             }
         });
