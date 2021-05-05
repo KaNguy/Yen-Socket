@@ -153,5 +153,6 @@ function decode(socket, buffer, frameBuffer) {
 module.exports = {
     generateMessage,
     decode,
-    closeFrame
+    closeFrame,
+    pingFrame
 }
