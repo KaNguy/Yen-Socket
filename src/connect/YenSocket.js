@@ -3,7 +3,7 @@ const { InitializeHeaders } = require('../util/InitializeHeaders');
 const { EventEmitter } = require('events');
 const { BASE_BUFFER } = require('../constants/Constants');
 const FrameBuffer = require('../util/FrameBuffer');
-const { generateExpectedKey } = require('../util/GenerateKey');
+const GKey = require('../util/GenerateKey');
 
 class YenSocket extends EventEmitter {
     /**
@@ -30,7 +30,7 @@ class YenSocket extends EventEmitter {
             // Check for websocket connection
             if (!response.headers["sec-websocket-accept"]) throw new Error("The sec-websocket-accept header is missing.");
             // Validation of the server key
-            const expectedKey = generateExpectedKey("sha1", initializeHeaders.getGeneratedWSKey(), "base64");
+            const expectedKey = GKey.generateExpectedKey("sha1", initializeHeaders.getGeneratedWSKey(), "base64");
             if (response.headers["sec-websocket-accept"] !== expectedKey) throw new Error("The sec-websocket-accept header returned a mismatched key.");
 
             validateHandshake(response.headers, initializeHeaders.getGeneratedWSKey());
@@ -122,7 +122,7 @@ const validateHandshake = function(handshake, wsKey) {
 
     // Validate the server key
     key = headers['sec-websocket-accept'];
-    const expectedKey = generateExpectedKey("sha1", wsKey, "base64");
+    const expectedKey = GKey.generateExpectedKey("sha1", wsKey, "base64");
     if (key !== expectedKey) {
         throw new Error("The sec-websocket-accept header returned a mismatched key.");
     }
