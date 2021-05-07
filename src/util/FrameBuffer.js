@@ -40,7 +40,7 @@ function generateMeta(fin, op, masked, payload) {
         for (let i = 0; i < payload.length; i++) {
             payload[i] ^= mask[i % 4];
         }
-        start += 4;
+        //start += 4;
     }
     return meta;
 }
@@ -132,7 +132,14 @@ function decode(socket, buffer, frameBuffer) {
                 payload = payload.toString();
                 frameBuffer = frameBuffer ? frameBuffer + payload : payload;
                 if (fin) {
-                    this.socket.emit("message", JSON.parse(frameBuffer));
+                    let message;
+                    try {
+                        message = JSON.parse(frameBuffer);
+                    } catch {
+                        message = frameBuffer;
+                    }
+
+                    this.socket.emit("message", message);
                     frameBuffer = null;
                 }
             }
