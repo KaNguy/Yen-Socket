@@ -157,9 +157,68 @@ function decode(socket, buffer, frameBuffer) {
     });
 }
 
+function decode1(buffer, data) {
+    buffer = Buffer.concat([buffer, data], buffer.length + data.length);
+    if (buffer.length > 2) {
+        const buf0 = buffer[0];
+        const hb = buf0 >> 4;
+        const fin = hb === 8;
+        const opcode = buf0 % 16;
+
+        if (opcode !== 0 &&
+            opcode !== 1 &&
+            opcode !== 2 &&
+            opcode !== 8 &&
+            opcode !== 9 &&
+            opcode !== 10) {
+            return false;
+        }
+
+        if (opcode >= 8 && !fin) {
+            return false;
+        }
+
+        const buf1 = buffer[1];
+        const hasMask = buf1 >> 7;
+
+        if (!hasMask) {
+            return false;
+        }
+
+        let length = buf1 % 128;
+        let start = hasMask ? 6 : 2;
+
+        if (buffer.length < start + length) return false;
+
+        if (length === 126) {
+            length = buffer.readUInt16BE(2);
+            start += 2;
+        } else if (length === 127) {
+            length = buffer.readUInt32BE(2) * Math.pow(2, 32) + buffer.readUInt32BE(6);
+            start += 8;
+        }
+
+        if (buffer.length < start + length) return false;
+
+        let payload = buffer.slice(start, start + length);
+        let mask, i;
+        if (hasMask) {
+            mask = buffer.slice(start - 4, start);
+            for (i = 0; i < payload.length; i++) {
+                payload[i] ^= mask[i % 4];
+            }
+        }
+
+        let frameBuffer = buffer.slice(start + length);
+        //console.log(frameBuffer);
+        //return frameBuffer;
+    }
+}
+
 module.exports = {
     generateMessage,
     decode,
     closeFrame,
-    pingFrame
+    pingFrame,
+    decode1
 }
