@@ -49,6 +49,12 @@ class YenSocket extends EventEmitter {
                 this.emit("message", JSON.stringify(message));
             });
 
+            socket.on('data', data => {
+                //console.log(data);
+                //console.log(FrameBuffer.decode1(BASE_BUFFER, data));
+                FrameBuffer.decode1(BASE_BUFFER, data);
+            });
+
             this.socket = socket;
         });
     }
