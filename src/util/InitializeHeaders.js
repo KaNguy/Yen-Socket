@@ -18,7 +18,7 @@ class InitializeHeaders {
             Connection: "Upgrade",
             Upgrade: "websocket",
             "Sec-WebSocket-Key": this.generatedWSKey,
-            "Sec-WebSocket-Version": "13",
+            "Sec-WebSocket-Version": "13"
         };
 
         return {
