@@ -5,8 +5,6 @@ class InitializeHeaders {
     constructor(options = {}) {
         if (options) this.options = options;
         this.options.URL = options.URL ? options.URL : null;
-
-
         this.generatedWSKey = generateSecWebSocketKey(16, "base64");
     }
 
